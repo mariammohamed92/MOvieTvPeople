@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Layout from './component/Layout/Layout'
+import Movie from './component/Movie/Movie'
+import Tv from './component/Tv/Tv'
+import People from './component/People/People'
+import Login from './component/Login/Login'
+import Register from './component/Register/Register'
+import Logout from './component/Logout/Logout'
+import Home from './component/Home/Home'
+import DetailesMovie from './component/Detailes/DetailesMovie'
+import DetailesTv from './component/Detailes/DetailesTv'
+import { jwtDecode } from "jwt-decode";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default function App() {
+  
+  let [loginData,setLoginData]=useState(null)
+
+  function savaLoginData() {
+    let encodedToken=localStorage.getItem('token');
+    let decodedToken= jwtDecode(encodedToken);
+    console.log(decodedToken);
+    setLoginData(decodedToken)
+  }
+
+  useEffect(()=>{
+    if (localStorage.getItem("token")) {
+      savaLoginData()
+  
+    }
+  },[])
+  
+  
+
+  let routers=createBrowserRouter([
+    {path:"",element:<Layout loginData={loginData} setLoginData={setLoginData} />,children:[
+      {path:"home",element:<Home/>},
+      {path:"movie",element:<Movie/>},
+      {path:"tv",element:<Tv/>},
+      {path:"people",element:<People/>},
+      {path:'detailsmoviee/:id' , element: <DetailesMovie/>},
+      {path:'detailstv/:id' , element: <DetailesTv/>},
+      {index:true,element:<Login/>},
+      {path:"login",element:<Login/>},
+      {path:"register",element:<Register/>},
+      {path:"logout",element:<Logout/>},
+
+    ]}
+  ])
+  return<>
+  <RouterProvider router={routers}></RouterProvider>
+  </>
 }
-
-export default App;
